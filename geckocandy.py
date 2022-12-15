@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from http.cookies import SimpleCookie
+import sys
 
 
 with open('cookies.txt', 'r') as f:
@@ -33,15 +34,18 @@ data = {
     'authenticity_token': '',
 }
 
-
 candy_url = "https://www.coingecko.com/account/candy"
 
 def get_candy_balance():
     response = requests.get(candy_url, params=params, cookies=cookies, headers=headers)
     if response.status_code == 200:
-        soup = BeautifulSoup(response.content, 'html.parser')
-        candy_balance = soup.find('div', {'data-target': 'points.balance'}).text
-        return candy_balance
+        try:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            candy_balance = soup.find('div', {'data-target': 'points.balance'}).text
+            return candy_balance
+        except:
+            print("Account login and balance enquiry failed. Check cookies.")
+            sys.exit()
     else:
         print("Error, check cookies or connection.")
 
